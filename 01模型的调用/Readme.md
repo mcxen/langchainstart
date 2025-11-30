@@ -60,6 +60,47 @@ agent = create_agent(model="gpt-4o", middleware=[middleware])
 
 
 
+#### 环境变量自动加载
+
+```
+OpenAI
+环境变量：OPENAI_API_KEY
+可选：OPENAI_BASE_URL / OPENAI_API_BASE（自定义 OpenAI-compatible endpoint）
+Anthropic
+环境变量：ANTHROPIC_API_KEY
+Google Gemini / Google GenAI
+环境变量：GOOGLE_API_KEY
+Hugging Face
+环境变量：HUGGINGFACEHUB_API_TOKEN
+Azure OpenAI
+环境变量：AZURE_OPENAI_API_KEY、AZURE_OPENAI_API_INSTANCE_NAME、AZURE_OPENAI_API_VERSION
+AWS Bedrock
+环境变量：BEDROCK_AWS_ACCESS_KEY_ID、BEDROCK_AWS_SECRET_ACCESS_KEY、BEDROCK_AWS_REGION
+Qwen / Tongyi（示例）
+常见示例：DASHSCOPE_API_KEY（在一些 Qwen 示例/第三方集成中出现）
+注：阿里/通义的集成可能使用不同变量名，请参考对应集成页
+```
+
+参考：
+
+```python
+from langchain.chat_models import init_chat_model
+import os
+from dotenv import load_dotenv
+load_dotenv()
+# 环境变量自动获取了
+llm = init_chat_model(
+    "openai:google/gemma-3n-e4b",  # 模型 ID
+    temperature = 0.1,
+)
+response= llm.invoke("写一首冬天的诗")
+print(response.content)
+```
+
+
+
+
+
 ## Init_chat_model
 
 你的原始代码是直接使用 `ChatOpenAI`：
@@ -91,3 +132,19 @@ llm = init_chat_model(
     base_url="http://localhost:1234/v1"
 )
 ```
+
+
+
+#### 如果是英伟达免费的
+
+```python
+from langchain_nvidia_ai_endpoints import ChatNVIDIA
+from dotenv import load_dotenv
+load_dotenv()
+# 设置环境变量（可选，init_chat_model 会用到）
+api_key = os.getenv("NV_API_KEY")
+ai_chat_model = ChatNVIDIA(model="qwen/qwen2.5-coder-32b-instruct",nvidia_api_key =api_key)
+response = ai_chat_model.invoke("介绍新加坡的军队.说中文")
+print(response.content)
+```
+
